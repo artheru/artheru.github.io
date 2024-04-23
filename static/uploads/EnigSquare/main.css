@@ -1,0 +1,70 @@
+#container{
+	width:510px;
+	margin:0 auto;
+}
+
+.YSlider{
+	position:absolute;
+	z-index:2;
+	background:rgba(255,170,135,0.3);
+	width:140px;
+	height:510px;
+	margin:-1px;
+	top:0px;
+	border:1px solid #AAAAAA;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+}
+.XSlider{
+	position:absolute;
+	z-index:2;
+	background:rgba(255,170,135,0.3); 
+	height:140px;
+	width:510px;
+	left:0px;
+	margin:-1px;
+	border:1px solid grey;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         0px 0px 26px 0px rgba(50, 50, 50, 0.75);
+}
+
+#grid-container {
+  z-index: 1; 
+  position:relative;
+  background: #FFCCCC;
+  padding: 15px;
+  height:485px;
+  width:485px;
+  border-radius: 10px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.game-cell {
+  top:495px;left:495px;
+  z-index:10;
+  position:absolute;
+  width: 110px;
+  height: 110px;
+  float: left;
+  margin: 15px;
+  border-radius: 10px;
+  background: rgba(255,233,233,0.5);
+  text-align:center;
+  line-height: 130px;
+  color:#FF7788;
+  font-size:70px;
+  font-family: fantasy;
+}
+
+.game-cell.trigger{
+	color:red;
+}

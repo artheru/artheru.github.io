@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>EnigSquare</title>
+	<link href="main.css" rel="stylesheet" type="text/css">
+	
+	<script src="jquery-2.1.1.min.js"></script>
+	<script>
+		var GameData={
+			PivotCell:null,
+			PivotPos:null,
+			counter:0
+		};
+		var rank=4, cwidth=125;
+		
+		function randomizeSquare(){
+			var RandStep=30;
+			var dt=["X","Y"], dp=["Y","X"], dq=["left","top"];
+			for(var i=0; i<RandStep; ++i){
+				var xy=Math.round(Math.random()), col=Math.round(Math.random()*(rank-1)), step=Math.round(Math.random()*(rank-2));
+				$(".game-cell:not(.dummy)").each(function(){
+					var t=$(this);
+					var curpos=t.data("curpos");
+					if (curpos[dp[xy]]!=col) return;
+					curpos[dt[xy]]=curpos[dt[xy]]+step;
+					if (curpos[dt[xy]]>=rank) curpos[dt[xy]]-=rank;
+					t.css(dq[xy],curpos[dt[xy]]*cwidth);
+				})
+			}
+		}
+		
+		$(function(){ //INIT GAME
+			//Some Convenient constants:
+			var debug=$("#debug"),
+				container=$("#grid-container");
+				
+			//Format Display.
+			for (var i=0; i<rank; ++i){
+				for (var j=0; j<rank; ++j){
+					container.append($("<div class='game-cell'>")
+						.data({"curpos":{X:j,Y:i},"rightpos":{x:j,y:i}})
+						.css({"left":j*cwidth+"px","top":i*cwidth+"px"})
+						.text(i*rank+j+1)
+					);
+				}
+			}
+			randomizeSquare();
+			
+			//Utility functions:
+			var movedir=
+				function(dir){
+					document.onmousemove=null;
+					document.onmouseup=null;
+					debug.text(GameData.PivotCell.X+","+GameData.PivotCell.Y+":"+dir);
+					//Convenient Transfrom:
+					var dp={X:"Y",Y:"X"}, dq={X:"left",Y:"top"}, rdq={X:"top",Y:"left"};
+					
+					//Add Slider and Dummy:
+					var slider=$("<div class='"+dir+"Slider'>");
+					var dummy=$("<div class='game-cell trigger dummy'>");
+					slider.css(rdq[dir],GameData.PivotCell[dp[dir]]*cwidth+"px");
+					dummy.css(rdq[dir],GameData.PivotCell[dp[dir]]*cwidth+"px");
+					container.append(slider).append(dummy);
+					
+					//Toggle Class:
+					$(".game-cell:not(.dummy)").each(function(){
+						var t=$(this);
+						if (t.data("curpos")[dp[dir]]==GameData.PivotCell[dp[dir]])
+							t.addClass("trigger NonDummy")
+							 .data("oripos",t.position());
+					})
+					
+					document.onmousemove=function(e){
+						var offset=e["client"+dir]-GameData.PivotPos[dir];
+						$(".trigger:not(.dummy)").each(function(){
+							var t=$(this);
+							var newpos=t.data("oripos")[dq[dir]]+offset;
+							var fw=rank*cwidth;
+							while(newpos>(rank-0.5)*cwidth) newpos-=fw;
+							while(newpos<=-0.5*cwidth) newpos+=fw;
+							t.css(dq[dir],newpos); //Move Position of Cells
+							//t.css("clip","");
+							if (newpos>(rank-1)*cwidth){
+								dummy.text(t.text());
+								dummy.css(dq[dir],newpos-fw);
+							}
+							if (newpos<0) {
+								//t.css("clip","rect(0px,"+cwidth+"px,"+cwidth+"px,"+(-newpos)+"px)");
+								dummy.text(t.text());
+								dummy.css(dq[dir],newpos+fw);
+							}
+						});
+						debug.text("ok");
+					};
+					document.onmouseup=function(e){
+						document.onmouseup=null;
+						//Enter State Ready.
+						$(".trigger:not(.dummy)").each(function(){
+							var t=$(this);
+							var p=t.position(),newP=0;
+							while (p[dq[dir]]>=(newP+0.5)*cwidth) ++newP;
+							t.data("curpos")[dir]=newP;
+							t.css(dq[dir],newP*cwidth);
+						});
+						
+						slider.remove();
+						dummy.remove();
+						$(".trigger").removeClass("trigger");
+						$(".game-cell").mousedown(cellEvent);
+					}
+					return null;
+				},
+				cellEvent=
+				function(e){
+				//Enter State WaitForDirection.
+					$(".game-cell").unbind("mousedown");
+					GameData.PivotCell=$(this).data("curpos");
+					GameData.PivotPos={X:e.clientX,Y:e.clientY};
+					document.onmousemove=function(e){
+						GameData.counter+=1;
+						if (Math.abs(e.clientX-GameData.PivotPos.X)>5){
+							document.onmousemove=null;
+							movedir('X');
+						}else
+						if (Math.abs(e.clientY-GameData.PivotPos.Y)>5){
+							document.onmousemove=null;
+							movedir('Y');
+						}
+					};
+					document.onmouseup=function(){
+						//Enter State NoDirection
+						debug.text("Unbind with out Dir");
+						document.onmousemove=null;
+						document.onmouseup=null;
+						//Enter State Origin.
+						$(".game-cell").mousedown(cellEvent);
+					};
+					return false;
+				};
+				
+			$(".game-cell").mousedown(cellEvent);
+		})
+	</script>
+</head>
+<body onload="">
+<div id="container">
+	<div>I'm Header</div>
+	<div id="grid-container">
+	</div>
+	<div id="debug">Xdfasdf</div>
+</div>
+</body>
+</html>
