@@ -5,4 +5,4 @@ hide_date: true
 reading_time: false
 ---
 
-MDCS is here [uses.tech](https://lessokaji.com/).
+MDCS is here [wiki](https://lessokaji.com/).

@@ -15,5 +15,5 @@ main:
     url: uses/
     weight: 40
   - name: MDCS
-    url: MDCS/
+    url: mdcs/
     weight: 50
